@@ -1,0 +1,32 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Import Data Pengurus</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/members/import" enctype="multipart/form-data" class="form form-horizontal">
+                <div class="form-body">
+                    <div class="row">
+                        <h4>Template untuk impor data pengurus <a href="/file/TemplateImporPengurus.xlsx" target="_blank">disini</a></h4>
+                        <div class="col-md-4">
+                            <label for="name">File Excel</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="file" class="form-control" name="file" accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel' >
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-sm-8 d-flex justify-content-start mt-3">
+                            <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                                Submit
+                            </button>
+                            <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

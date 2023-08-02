@@ -1,0 +1,141 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Tambah Pengurus</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/members/store" class="form form-horizontal" enctype="multipart/form-data">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="photo">Foto</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="file" id="photo"
+                                class="form-control" name="photo"
+                                required />
+                            <p>Maksimal ukuran file : 1MB</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="nim">NIM</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="nim"
+                                class="form-control" name="nim"
+                                placeholder="NIM Pengurus" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="name">Nama</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="name"
+                                class="form-control" name="name"
+                                placeholder="Nama Pengurus" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="email" id="email"
+                                class="form-control" name="email"
+                                placeholder="Email" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="classes">Kelas</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="classes"
+                                class="form-control" name="classes"
+                                placeholder="Kelas" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="gender">Jenis Kelamin</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                           <select name="gender" id="gender" class="form-control" required>
+                                <option value="" selected disabled>-- Pilih --</option>
+                                <option value="Laki-Laki">Laki-Laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                           </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="phone">No.Whatsapp</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="phone"
+                                class="form-control" name="phone"
+                                placeholder="Nomor Whatsapp" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="address">Alamat</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="address"
+                                class="form-control" name="address"
+                                placeholder="Alamat" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="instagram">Instagram</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="instagram"
+                                class="form-control" name="instagram"
+                                placeholder="Instagram" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="member-position">Jabatan</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <select name="member_position" id="member-position"
+                                class="choices form-select" required>
+                                <option value="">-- Pilih --</option>
+                                <% memberPositions.forEach((memberPosition, index) => { %>
+                                    <option value="<%= memberPosition._id %>">
+                                        <%= memberPosition.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="structural">Struktural</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <select name="structural" id="structural"
+                                class="choices form-select" required>
+                                <option value="">-- Pilih --</option>
+                                <% structurals.forEach((structural, index) => { %>
+                                    <option value="<%= structural._id %>">
+                                        <%= structural.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="periode">Periode</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <select name="periode" id="periode"
+                                class="choices form-select" required>
+                                <option value="">-- Pilih --</option>
+                                <% periode.forEach((p, index) => { %>
+                                    <option value="<%= p._id %>">
+                                        <%= p.periode_year %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-sm-8 d-flex justify-content-start mt-3">
+                            <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                                Submit
+                            </button>
+                            <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
