@@ -1,0 +1,42 @@
+<div class="page-heading">
+    <section class="section">
+        <div class="card">
+            <div class="card-header">
+                <a href="/categories/create" class="btn btn-primary">Tambah +</a>
+            </div>
+            <div class="card-body">
+               
+                <%- include('../partials/message.ejs') %>
+                
+                <div class="table-responsive">
+                    <table class="table" id="table1">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Kategori</th>
+                                <th>Dibuat</th>
+                                <th>Diedit</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% categories.forEach((category, index) => { %>
+                               <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= category.name %></td>
+                                    <td><%= category.createdAt %></td>
+                                    <td><%= category.updatedAt %></td>
+                                    <td>
+                                        <a href="/categories/<%= category._id %>/edit"
+                                            class="btn btn-warning text-white"><i class="bi bi-pencil-fill"></i></a>
+                                        <button class="btn btn-danger delete-confirm" data-action="/categories/<%= category._id %>?_method=DELETE"><i class="bi bi-trash3-fill"></i></button>
+                                    </td>
+                               </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

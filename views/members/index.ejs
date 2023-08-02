@@ -1,0 +1,73 @@
+<div class="page-heading">
+    <section class="section">
+        <div class="card">
+            <div class="card-header">
+                <a href="/members/create" class="btn btn-primary">Tambah +</a>
+                <a class="btn btn-success ms-2" href="/members/import">
+                    Impor Data +
+              </a>
+            </div>
+            <div class="card-body">
+               
+                <%- include('../partials/message.ejs') %>
+                
+                <div class="table-responsive">
+                    <table class="table" id="table1">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Foto</th>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Kelas</th>
+                                <th>Jenis Kelamin</th>
+                                <th>No.Whatsapp</th>
+                                <th>Alamat</th>
+                                <th>Instagram</th>
+                                <th>Jabatan</th>
+                                <th>Struktural</th>
+                                <th>Periode</th>
+                                <th>Dibuat</th>
+                                <th>Diedit</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% members.forEach((member, index) => { %>
+                               <tr>
+                                    <td><%= index + 1 %></td>
+                                    <% if(member.photo == "avatar.png"){ %>
+                                        <td><img src="/assets/static/images/faces/avatar.png"
+                                            alt="avatar.png" class="img-fluid" width="50"></td>
+                                    <% } else { %>
+                                        <td><img src="/members/<%= member.photo %>"
+                                            alt="<%= member.photo %>" class="img-fluid" width="50"></td>
+                                    <% } %>
+                                    <td><%= member.nim %></td>
+                                    <td><%= member.name %></td>
+                                    <td><%= member.email %></td>
+                                    <td><%= member.classes %></td>
+                                    <td><%= member.gender %></td>
+                                    <td><%= member.phone %></td>
+                                    <td><%= member.address %></td>
+                                    <td><%= member.instagram %></td>
+                                    <td><%= member.memberPositionId.name %></td>
+                                    <td><%= member.structuralId.name %></td>
+                                    <td><%= member.periodeId.periode_year %></td>
+                                    <td><%= member.createdAt %></td>
+                                    <td><%= member.updatedAt %></td>
+                                    <td>
+                                        <a href="/members/<%= member._id %>/edit"
+                                            class="btn btn-warning text-white"><i class="bi bi-pencil-fill"></i></a>
+                                        <button class="btn btn-danger delete-confirm" data-action="/members/<%= member._id %>?_method=DELETE"><i class="bi bi-trash3-fill"></i></button>
+                                    </td>
+                               </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,50 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Tambah Data Periode</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/periode/store" class="form form-horizontal">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="name">Nama Periode</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="name"
+                                class="form-control" name="name"
+                                placeholder="Nama Periode" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tagline">Tagline</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="tagline"
+                                class="form-control" name="tagline"
+                                placeholder="Tagline" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="periode_year">Tahun Periode</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="periode_year"
+                                class="form-control" name="periode_year"
+                                placeholder="Tahun Periode" required />
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-sm-8 d-flex justify-content-start mt-3">
+                            <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                                Submit
+                            </button>
+                            <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

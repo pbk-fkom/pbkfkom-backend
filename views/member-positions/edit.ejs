@@ -1,0 +1,35 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Edit Jabatan Pengurus</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/member-positions/<%= memberPosition._id %>/update?_method=PUT"
+                class="form form-horizontal">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="name">Nama Jabatan Pengurus</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="name"
+                                class="form-control" name="name"
+                                placeholder="Nama Jabatan Pengurus" value="<%= memberPosition.name %>" required />
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-sm-8 d-flex justify-content-start mt-3">
+                            <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                                Submit
+                            </button>
+                            <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

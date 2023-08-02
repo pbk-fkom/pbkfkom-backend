@@ -1,0 +1,107 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Tambah Artikel</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/posts/store" class="form form-horizontal"
+            enctype="multipart/form-data">
+            <div class="form-body">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <label for="thumbnail">Thumbnail</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <input type="file" id="thumbnail"
+                            class="form-control" name="thumbnail"
+                            required />
+                        <p>Maksimal ukuran file : 1MB</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="title">Judul</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <input type="text" id="title"
+                            class="form-control" name="title"
+                            placeholder="Judul" value="" required />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="summernote">Konten</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <textarea name="content" id="summernote" class="form-control"
+                            style="height: 350px" required></textarea>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="category">Kategori</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <select name="category" id="category"
+                            class="choices form-select" required>
+                            <option value="">-- Pilih --</option>
+                            <% categories.forEach((category, index) => { %>
+                                <option value="<%= category._id %>">
+                                    <%= category.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="tag">Tag</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <select name="tags[]" id="tag"
+                            class="choices form-select multiple-remove"
+                            multiple="multiple" required>
+                            <% tags.forEach((tag, index) => { %>
+                                <option value="<%= tag._id %>"><%= tag.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="writer">Penulis</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <input type="text" id="writer"
+                            class="form-control" name="writer"
+                            placeholder="Penulis" value="" required />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="publish">Status</label>
+                    </div>
+                    <div class="col-md-8 form-group">
+                        <input type="radio" class="btn-check"
+                            name="status" id="publish" autocomplete="off" value="publish" checked
+                             />
+                        <label class="btn btn-outline-success" for="publish">Publish</label>
+
+                        <input type="radio" class="btn-check"
+                            name="status" id="draft" autocomplete="off" value="draft"
+                             />
+                        <label class="btn btn-outline-danger" for="draft">Draft</label>
+                    </div>
+
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-sm-8 d-flex justify-content-start mt-3">
+                        <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                            Submit
+                        </button>
+                        <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                            Reset
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+</section>

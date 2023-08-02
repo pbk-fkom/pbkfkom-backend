@@ -1,0 +1,168 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Edit Pengurus</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/members/<%= member._id %>/update?_method=PUT"
+                class="form form-horizontal" enctype="multipart/form-data">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="photo">Foto</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <% if(member.photo == "avatar.png"){ %>
+                                <img src="/assets/static/images/faces/avatar.png"
+                                    alt="avatar.png" class="img-fluid" width="200">
+                            <% } else { %>
+                                <img src="/members/<%= member.photo %>"
+                                class="img-fluid mb-3" alt="<%= member.photo %>" width="200">
+                            <% } %>
+                            <input type="file" id="photo"
+                                class="form-control" name="photo" />
+                            <p>
+                                Maksimal ukuran file : 1MB <br/>
+                                Kosongkan jika tidak ingin diubah
+                            </p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="nim">NIM</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="nim"
+                                class="form-control" name="nim"
+                                placeholder="NIM Pengurus" value="<%= member.nim %>" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="name">Nama</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="name"
+                                class="form-control" name="name"
+                                placeholder="Nama Pengurus" value="<%= member.name %>"  required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="email" id="email"
+                                class="form-control" name="email"
+                                placeholder="Email" value="<%= member.email %>"  required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="classes">Kelas</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="classes"
+                                class="form-control" name="classes"
+                                placeholder="Kelas" value="<%= member.classes %>"  required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="gender">Jenis Kelamin</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                           <select name="gender" id="gender" class="form-control" required>
+                                <option value="" selected disabled>-- Pilih --</option>
+                                <option value="Laki-Laki" 
+                                    <% if(member.gender == "Laki-Laki") { %>
+                                        selected
+                                    <% } %>
+                                >Laki-Laki</option>
+                                <option value="Perempuan"
+                                    <% if(member.gender == "Perempuan") { %>
+                                        selected
+                                    <% } %>
+                                >Perempuan</option>
+                           </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="classes">No.Whatsapp</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="classes"
+                                class="form-control" name="phone"
+                                placeholder="Nomor Whatsapp" value="<%= member.phone %>" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="address">Alamat</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="address"
+                                class="form-control" name="address"
+                                placeholder="Alamat" value="<%= member.address %>" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="instagram">Instagram</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="instagram"
+                                class="form-control" name="intagram"
+                                placeholder="Instagram" value="<%= member.instagram %>" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="member-position">Jabatan</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <select name="member_position" id="member-position"
+                                class="choices form-select" required>
+                                <option value="">-- Pilih --</option>
+                                <% memberPositions.forEach((memberPosition, index) => { %>
+                                    <option value="<%= memberPosition._id %>"
+                                            <% if(member.memberPositionId._id.toString() == memberPosition._id.toString()) { %>
+                                                selected
+                                            <% } %>
+                                        ><%= memberPosition.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="structural">Struktural</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <select name="structural" id="structural"
+                                class="choices form-select" required>
+                                <option value="">-- Pilih --</option>
+                                <% structurals.forEach((structural, index) => { %>
+                                    <option value="<%= structural._id %>"
+                                            <% if(member.structuralId._id.toString() == structural._id.toString()) { %>
+                                                selected
+                                            <% } %>
+                                        ><%= structural.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="periode">Peiode</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <select name="periode" id="periode"
+                                class="choices form-select" required>
+                                <option value="">-- Pilih --</option>
+                                <% periode.forEach((p, index) => { %>
+                                    <option value="<%= p._id %>"
+                                            <% if(member.periodeId._id.toString() == p._id.toString()) { %>
+                                                selected
+                                            <% } %>
+                                        ><%= p.periode_year %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-sm-8 d-flex justify-content-start mt-3">
+                            <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                                Submit
+                            </button>
+                            <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

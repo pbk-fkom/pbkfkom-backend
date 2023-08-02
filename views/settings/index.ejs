@@ -1,0 +1,74 @@
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Edit Pengaturan</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/settings/update?_method=PUT"
+                class="form form-horizontal" enctype="multipart/form-data">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="about-photo">Foto Halaman Tentang</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <img src="/about/<%= setting.filter((item) => item.key == 'about_photo')[0].value %>"
+                            class="img-fluid mb-3" alt="<%= setting.about_photo %>" width="200">
+                            <input type="file" id="about-photo"
+                            class="form-control" name="about_photo"
+                             />
+                            <p>Maksimal ukuran file : 1MB</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="site_email">Email Website</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="email" id="site_email"
+                                class="form-control" name="site_email"
+                                placeholder="Email Website" value="<%= setting.filter((item) => item.key == 'site_email')[0].value %>" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="site_youtube_channel">URL Channel Youtube</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="url" id="site_youtube_channel"
+                                class="form-control" name="site_youtube_channel"
+                                placeholder="URL Channel Youtube" value="<%= setting.filter((item) => item.key == 'site_youtube_channel')[0].value %>" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="site_instagram_account">URL Instagram</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="url" id="site_instagram_account"
+                                class="form-control" name="site_instagram_account"
+                                placeholder="URL Instagram" value="<%= setting.filter((item) => item.key == 'site_instagram_account')[0].value %>" required />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="site_introduce_video_id">ID Video Profil PBK</label>
+                        </div>
+                        <div class="col-md-8 form-group">
+                            <input type="text" id="site_introduce_video_id"
+                                class="form-control" name="site_introduce_video_id"
+                                placeholder="ID Video Profil PBK" value="<%= setting.filter((item) => item.key == 'site_introduce_video_id')[0].value %>" required />
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-sm-8 d-flex justify-content-start mt-3">
+                            <button type="submit" class="btn btn-primary me-1 mb-1 col-6 col-md-6">
+                                Submit
+                            </button>
+                            <button type="reset" class="btn btn-light-secondary me-1 mb-1 col-6 col-md-6">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
