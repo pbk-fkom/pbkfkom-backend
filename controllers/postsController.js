@@ -4,6 +4,7 @@ const Tags = require("../models/Tags");
 const path = require('path')
 const fs = require('fs')
 const config = require('../config')
+const sharp = require('sharp');
 
 module.exports = {
     
@@ -60,6 +61,7 @@ module.exports = {
 
             src.on('end', async ()=>{
             try {
+                await sharp(tmp_path).resize().jpeg({ quality: 75 }).toFile(target_path);
 
                 const post = new Posts({
                     title,
@@ -137,7 +139,8 @@ module.exports = {
 
           src.on('end', async ()=>{
           try {
-
+              await sharp(tmp_path).resize().jpeg({ quality: 75 }).toFile(target_path);
+              
               const post = await Posts.findOne({_id: id})
 
               let currentImage = `${config.rootPath}/public/assets/thumbnails/${post.thumbnail}`;

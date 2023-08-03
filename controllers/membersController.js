@@ -6,6 +6,7 @@ const path = require('path')
 const fs = require('fs')
 const config = require('../config')
 const readXlsxFile = require("read-excel-file/node");
+const sharp = require('sharp');
 
 module.exports = {
     
@@ -64,6 +65,7 @@ module.exports = {
 
             src.on('end', async ()=>{
             try {
+                await sharp(tmp_path).resize().jpeg({ quality: 75 }).toFile(target_path);
 
                 const member = new Members({
                     nim,
@@ -141,16 +143,17 @@ module.exports = {
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
             let target_path = path.resolve(config.rootPath, `public/assets/members/${filename}`)
-  
+
             const src = fs.createReadStream(tmp_path)
             const dest = fs.createWriteStream(target_path)
-  
+
             src.pipe(dest)
   
             src.on('end', async ()=>{
             try {
-  
-                const member = await Members.findOne({_id: id})
+                await sharp(tmp_path).resize().jpeg({ quality: 75 }).toFile(target_path);
+
+                const member = await Members.findOne({_id: id}) 
   
                 let currentImage = `${config.rootPath}/public/assets/members/${member.photo}`;
                 if(fs.existsSync(currentImage)){
