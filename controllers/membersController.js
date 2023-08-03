@@ -55,7 +55,7 @@ module.exports = {
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
-            let target_path = path.resolve(config.rootPath, `public/members/${filename}`)
+            let target_path = path.resolve(config.rootPath, `public/assets/members/${filename}`)
 
             const src = fs.createReadStream(tmp_path)
             const dest = fs.createWriteStream(target_path)
@@ -140,7 +140,7 @@ module.exports = {
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
-            let target_path = path.resolve(config.rootPath, `public/members/${filename}`)
+            let target_path = path.resolve(config.rootPath, `public/assets/members/${filename}`)
   
             const src = fs.createReadStream(tmp_path)
             const dest = fs.createWriteStream(target_path)
@@ -152,7 +152,7 @@ module.exports = {
   
                 const member = await Members.findOne({_id: id})
   
-                let currentImage = `${config.rootPath}/public/members/${member.photo}`;
+                let currentImage = `${config.rootPath}/public/assets/members/${member.photo}`;
                 if(fs.existsSync(currentImage)){
                   fs.unlinkSync(currentImage)
                 }
@@ -222,7 +222,7 @@ module.exports = {
         _id: id
       });
 
-      let currentImage = `${config.rootPath}/public/members/${member.thumbnail}`;
+      let currentImage = `${config.rootPath}/public/assets/members/${member.thumbnail}`;
       if(fs.existsSync(currentImage)){
         fs.unlinkSync(currentImage)
       }
@@ -253,7 +253,7 @@ module.exports = {
 
   importStore: async (req, res) => {
     try {
-      const pathFile = path.resolve(config.rootPath, `public/uploads/${req.file.filename}`);
+      const pathFile = path.resolve(config.rootPath, `public/assets/uploads/${req.file.filename}`);
 
       readXlsxFile(pathFile).then(async (rows) => {
         rows.shift();

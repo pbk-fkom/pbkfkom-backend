@@ -38,8 +38,13 @@ npm-debug.log
 .idea/*
 
 # Assets
-public/thumbnails/*
-public/members/*
-public/about/*
-public/uploads/*
-!public/members/avatar.png
+public/assets/thumbnails/*
+public/assets/members/*
+public/assets/about/*
+public/assets/uploads/*
+
+!public/about
+!public/assets/members
+!public/assets/thumbnails
+!public/assets/uploads
+!public/assets/members/avatar.png

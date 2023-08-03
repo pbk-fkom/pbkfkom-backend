@@ -5,7 +5,7 @@ const multer = require('multer')
 const os = require('os')
 
 router.get("/", settingsController.index);
-router.put("/update", multer({ dest: os.tmpdir() }).single('about_photo'), settingsController.update);
+router.put("/update", multer({ dest: os.tmpdir() }).single('site_about_photo'), settingsController.update);
 
 // API
 router.get("/index", settingsController.indexAPI);

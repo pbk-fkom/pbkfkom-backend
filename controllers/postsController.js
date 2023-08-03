@@ -51,7 +51,7 @@ module.exports = {
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
-            let target_path = path.resolve(config.rootPath, `public/thumbnails/${filename}`)
+            let target_path = path.resolve(config.rootPath, `public/assets/thumbnails/${filename}`)
 
             const src = fs.createReadStream(tmp_path)
             const dest = fs.createWriteStream(target_path)
@@ -128,7 +128,7 @@ module.exports = {
           let tmp_path= req.file.path;
           let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
           let filename = req.file.filename + '.' + originaExt;
-          let target_path = path.resolve(config.rootPath, `public/thumbnails/${filename}`)
+          let target_path = path.resolve(config.rootPath, `public/assets/thumbnails/${filename}`)
 
           const src = fs.createReadStream(tmp_path)
           const dest = fs.createWriteStream(target_path)
@@ -140,7 +140,7 @@ module.exports = {
 
               const post = await Posts.findOne({_id: id})
 
-              let currentImage = `${config.rootPath}/public/thumbnails/${post.thumbnail}`;
+              let currentImage = `${config.rootPath}/public/assets/thumbnails/${post.thumbnail}`;
               if(fs.existsSync(currentImage)){
                 fs.unlinkSync(currentImage)
               }
@@ -201,7 +201,7 @@ module.exports = {
         _id: id
       });
 
-      let currentImage = `${config.rootPath}/public/thumbnails/${post.thumbnail}`;
+      let currentImage = `${config.rootPath}/public/assets/thumbnails/${post.thumbnail}`;
       if(fs.existsSync(currentImage)){
         fs.unlinkSync(currentImage)
       }

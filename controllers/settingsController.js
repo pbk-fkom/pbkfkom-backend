@@ -32,7 +32,7 @@ module.exports = {
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
-            let target_path = path.resolve(config.rootPath, `public/about/${filename}`)
+            let target_path = path.resolve(config.rootPath, `public/assets/about/${filename}`)
   
             const src = fs.createReadStream(tmp_path)
             const dest = fs.createWriteStream(target_path)
@@ -41,15 +41,15 @@ module.exports = {
   
             src.on('end', async ()=>{
             try {
-                const setting = await Settings.findOne({key: "about_photo"})
+                const setting = await Settings.findOne({key: "site_about_photo"})
 
-                let currentImage = `${config.rootPath}/public/about/${setting.value}`;
+                let currentImage = `${config.rootPath}/public/assets/about/${setting.value}`;
                 if(fs.existsSync(currentImage)){
                   fs.unlinkSync(currentImage)
                 }
   
                 await Settings.findOneAndUpdate({
-                    key: 'about_photo'
+                    key: 'site_about_photo'
                   },{ value: filename });
   
                 req.flash('alertMessage', "Berhasil mengedit pengaturan")
@@ -64,11 +64,13 @@ module.exports = {
             }
             })
         } else {
-            const settings = await Settings.find();
+            // const settings = await Settings.find();
 
-            settings.forEach((item) => {
-                console.log(item)
-            })
+            // settings.forEach(async (item) => {
+            //   await Settings.findOneAndUpdate({
+            //     key: item.key
+            //   },{ value: filename });
+            // })
             
             req.flash('alertMessage', "Berhasil mengedit pengaturan")
             req.flash('alertStatus', "success")
