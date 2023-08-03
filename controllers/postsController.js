@@ -49,6 +49,22 @@ module.exports = {
         const { title, content, tags, category, writer } = req.body;
 
         if(req.file){
+          if (!(req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png')){
+            req.flash('alertMessage', "Format file tidak didukung, hanya mendukung png,jpg dan jpeg")
+            req.flash('alertStatus', 'danger')
+            res.redirect('/posts')
+
+            return false
+          }
+
+          if (req.file.size >= 1024000){
+            req.flash('alertMessage', "Ukuran file maksimal 1MB")
+            req.flash('alertStatus', 'danger')
+            res.redirect('/posts')
+
+            return false
+          }
+
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
@@ -69,7 +85,7 @@ module.exports = {
                     categoryId: category,
                     tagId: tags,
                     writer,
-                    userId: "64c395105c431d8409248e9c",
+                    userId: req.session.user._id,
                     thumbnail: filename
                 })
 
@@ -127,6 +143,22 @@ module.exports = {
         const { title, content, tags, category, writer } = req.body;
     
         if(req.file){
+          if (!(req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png')){
+            req.flash('alertMessage', "Format file tidak didukung, hanya mendukung png,jpg dan jpeg")
+            req.flash('alertStatus', 'danger')
+            res.redirect('/posts')
+
+            return false
+          }
+
+          if (req.file.size >= 1024000){
+            req.flash('alertMessage', "Ukuran file maksimal 1MB")
+            req.flash('alertStatus', 'danger')
+            res.redirect('/posts')
+
+            return false
+          }
+
           let tmp_path= req.file.path;
           let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
           let filename = req.file.filename + '.' + originaExt;
@@ -140,7 +172,7 @@ module.exports = {
           src.on('end', async ()=>{
           try {
               await sharp(tmp_path).resize().jpeg({ quality: 75 }).toFile(target_path);
-              
+
               const post = await Posts.findOne({_id: id})
 
               let currentImage = `${config.rootPath}/public/assets/thumbnails/${post.thumbnail}`;
@@ -156,7 +188,7 @@ module.exports = {
                   categoryId: category,
                   tagId: tags,
                   writer,
-                  userId: "64c395105c431d8409248e9c",
+                  userId: req.session.user._id,
                   thumbnail: filename
                 })
 
@@ -180,7 +212,7 @@ module.exports = {
               categoryId: category,
               tagId: tags,
               writer,
-              userId: "64c395105c431d8409248e9c"
+              userId: req.session.user._id
             })
             
             req.flash('alertMessage', "Berhasil mengedit artikel")

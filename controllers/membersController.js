@@ -53,6 +53,22 @@ module.exports = {
         const { nim, name, email, classes, gender, phone, address, instagram, member_position, structural, periode } = req.body;
 
         if(req.file){
+          if (!(req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png')){
+            req.flash('alertMessage', "Format file tidak didukung, hanya mendukung png,jpg dan jpeg")
+            req.flash('alertStatus', 'danger')
+            res.redirect('/members')
+
+            return false
+          }
+
+          if (req.file.size >= 1024000){
+            req.flash('alertMessage', "Ukuran file maksimal 1MB")
+            req.flash('alertStatus', 'danger')
+            res.redirect('/members')
+
+            return false
+          }
+          
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
@@ -139,6 +155,22 @@ module.exports = {
         const { nim, name, email, classes, gender, phone, address, instagram, member_position, structural, periode } = req.body;
 
         if(req.file){
+            if (!(req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png')){
+              req.flash('alertMessage', "Format file tidak didukung, hanya mendukung png,jpg dan jpeg")
+              req.flash('alertStatus', 'danger')
+              res.redirect('/members')
+
+              return false
+            }
+
+            if (req.file.size >= 1024000){
+              req.flash('alertMessage', "Ukuran file maksimal 1MB")
+              req.flash('alertStatus', 'danger')
+              res.redirect('/members')
+
+              return false
+            }
+
             let tmp_path= req.file.path;
             let originaExt = req.file.originalname.split('.')[req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originaExt;
@@ -256,6 +288,14 @@ module.exports = {
 
   importStore: async (req, res) => {
     try {
+      if (!(req.file.mimetype === 'image/xlsx' || req.file.mimetype === 'image/xlx')){
+        req.flash('alertMessage', "Format file tidak didukung, hanya mendukung .xlx dan .xlsx")
+        req.flash('alertStatus', 'danger')
+        res.redirect('/members')
+
+        return false
+      }
+
       const pathFile = path.resolve(config.rootPath, `public/assets/uploads/${req.file.filename}`);
 
       readXlsxFile(pathFile).then(async (rows) => {
