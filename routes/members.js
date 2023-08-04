@@ -7,7 +7,9 @@ const {
   memberStore,
   memberUpdate,
 } = require("../validations/membersValidation");
+const { isLogin } = require("../middleware/authMiddleware");
 
+router.use(isLogin);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./public/assets/uploads");

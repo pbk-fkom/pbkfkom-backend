@@ -5,7 +5,9 @@ const {
   strukturalStore,
   strukturalUpdate,
 } = require("../validations/structuralsValidation");
+const { isLogin } = require("../middleware/authMiddleware");
 
+router.use(isLogin);
 router.get("/", structuralsController.index);
 router.get("/create", structuralsController.create);
 router.get("/:id/edit", structuralsController.edit);

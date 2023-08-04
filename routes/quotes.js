@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const quotesController = require("../controllers/quotesController");
 const { quoteStore, quoteUpdate } = require("../validations/quotesValidation");
+const { isLogin } = require("../middleware/authMiddleware");
 
+router.use(isLogin);
 router.get("/", quotesController.index);
 router.get("/create", quotesController.create);
 router.get("/:id/edit", quotesController.edit);

@@ -5,7 +5,9 @@ const {
   periodeStore,
   periodeUpdate,
 } = require("../validations/periodeValidation");
+const { isLogin } = require("../middleware/authMiddleware");
 
+router.use(isLogin);
 router.get("/", periodeController.index);
 router.get("/create", periodeController.create);
 router.get("/:id/edit", periodeController.edit);
