@@ -26,8 +26,4 @@ router.put(
 );
 router.delete("/:id", postsController.destroy);
 
-// API
-router.get("/index", postsController.indexAPI);
-router.get("/detail/:slug", postsController.detailAPI);
-
 module.exports = router;
