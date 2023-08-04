@@ -1,15 +1,17 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const settingsScheme = mongoose.Schema({
-  key: {
-    type: String
+const settingsScheme = mongoose.Schema(
+  {
+    key: {
+      type: String,
+    },
+    value: {
+      type: String,
+    },
   },
-  value: {
-    type: String
-  },
-}, 
-{
-    timestamps: true
- });
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('Settings', settingsScheme);
+module.exports = mongoose.model("Settings", settingsScheme);

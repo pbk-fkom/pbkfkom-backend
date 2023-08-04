@@ -1,51 +1,64 @@
 const Tags = require("../models/Tags");
+const { validationResult } = require("express-validator");
 
 module.exports = {
-    
   index: async (req, res) => {
     try {
-        const alertMessage = req.flash("alertMessage")
-        const alertStatus = req.flash("alertStatus")
-  
-        const alert = { message: alertMessage, status: alertStatus}
-        const tags = await Tags.find()
-  
-        res.render('tags/index',{
-          tags,
-          alert,
-          title: 'Tag'
-        })
-      } catch (err) {
-        req.flash('alertMessage', `${err.message}`)
-        req.flash('alertStatus', 'danger')
-        res.redirect('/tags')
-        
-      }
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+
+      const alert = { message: alertMessage, status: alertStatus };
+      const tags = await Tags.find();
+
+      res.render("tags/index", {
+        tags,
+        alert,
+        title: "Tag",
+      });
+    } catch (err) {
+      req.flash("alertMessage", `${err.message}`);
+      req.flash("alertStatus", "danger");
+      res.redirect("/tags");
+    }
   },
 
   create: async (req, res) => {
     try {
-        res.render("tags/create", {
-            title: "Tambah Tag",
-        });
+      const errors = req.flash("errors");
+
+      res.render("tags/create", {
+        errors,
+        title: "Tambah Tag",
+      });
     } catch (error) {
-        req.flash("alertMessage", `${error.message}`);
-        req.flash("alertStatus", "danger");
-        
-        res.redirect("/tags");
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/tags");
     }
   },
 
   store: async (req, res) => {
     try {
-        const { name } = req.body;
-        await Tags.create({ name })
+      const err = validationResult(req);
+      const { name } = req.body;
 
-        req.flash("alertMessage", "Berhasil menambahkan tag");
-        req.flash("alertStatus", "success");
+      if (!err.isEmpty()) {
+        const errors = err.array();
 
-        res.redirect("/tags"); 
+        req.flash("errors", errors);
 
+        res.redirect("/tags/create");
+
+        return false;
+      }
+
+      await Tags.create({ name });
+
+      req.flash("alertMessage", "Berhasil menambahkan tag");
+      req.flash("alertStatus", "success");
+
+      res.redirect("/tags");
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
       req.flash("alertStatus", "danger");
@@ -56,34 +69,50 @@ module.exports = {
 
   edit: async (req, res) => {
     try {
-         const { id } = req.params;
-         const tag = await Tags.findById(id);
-         
-         res.render("tags/edit", {
-            tag,
-            title: "Edit tag",
-        });
-      } catch (error) {
-        req.flash("alertMessage", `${error.message}`);
-        req.flash("alertStatus", "danger");
+      const { id } = req.params;
+      const tag = await Tags.findById(id);
+      const errors = req.flash("errors");
 
-        res.redirect("/tags");
-      }
+      res.render("tags/edit", {
+        errors,
+        tag,
+        title: "Edit tag",
+      });
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/tags");
+    }
   },
 
   update: async (req, res) => {
     try {
-        const { id } = req.params;
-        const { name } = req.body;
+      const err = validationResult(req);
+      const { id } = req.params;
+      const { name } = req.body;
 
-        await Tags.findOneAndUpdate({
-            _id: id
-          },{ name });
-    
-        req.flash("alertMessage", "Berhasil mengedit kategori");
-        req.flash("alertStatus", "success");
-    
-        res.redirect("/tags");
+      if (!err.isEmpty()) {
+        const errors = err.array();
+
+        req.flash("errors", errors);
+
+        res.redirect(`/tags/${id}/edit`);
+
+        return false;
+      }
+
+      await Tags.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        { name }
+      );
+
+      req.flash("alertMessage", "Berhasil mengedit kategori");
+      req.flash("alertStatus", "success");
+
+      res.redirect("/tags");
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
       req.flash("alertStatus", "danger");
@@ -112,11 +141,11 @@ module.exports = {
   // API Controller
   indexAPI: async (req, res) => {
     try {
-      const tags = await Tags.find()
+      const tags = await Tags.find();
 
-      res.status(200).json({ data: tags })
+      res.status(200).json({ data: tags });
     } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` })
+      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };
