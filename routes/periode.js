@@ -17,8 +17,4 @@ router.post("/store", periodeStore, periodeController.store);
 router.put("/:id/update", periodeUpdate, periodeController.update);
 router.delete("/:id", periodeController.destroy);
 
-// API
-router.get("/index", periodeController.indexAPI);
-router.get("/latest-periode", periodeController.getLatestPeriodeAPI);
-
 module.exports = router;

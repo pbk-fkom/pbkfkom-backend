@@ -13,7 +13,4 @@ router.put(
   settingsController.update
 );
 
-// API
-router.get("/index", settingsController.indexAPI);
-
 module.exports = router;

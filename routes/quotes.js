@@ -14,8 +14,4 @@ router.post("/store", quoteStore, quotesController.store);
 router.put("/:id/update", quoteUpdate, quotesController.update);
 router.delete("/:id", quotesController.destroy);
 
-// API
-router.get("/index", quotesController.indexAPI);
-router.get("/quote", quotesController.quoteAPI);
-
 module.exports = router;
