@@ -44,21 +44,29 @@
           </a>
         </li>
 
+        <% if(user.role.includes("ketum","sekum")){ %>
         <li class="sidebar-title">Addons</li>
+        <% } %>
+
+        <% if(user.role.includes("ketum")){ %>
         <li class="sidebar-item">
           <a href="/quotes" class="sidebar-link">
             <i class="bi bi-grid-fill"></i>
             <span>Kutipan Ketum</span>
           </a>
         </li>
+        <% } %>
 
+        <% if(user.role.includes("ketum","sekum")){ %>
         <li class="sidebar-item">
           <a href="/achievements" class="sidebar-link">
             <i class="bi bi-grid-fill"></i>
             <span>Prestasi</span>
           </a>
         </li>
+        <% } %>
 
+        <% if(user.role.includes("ketum","sekum", "medinfo", "akademis")){ %>
         <li class="sidebar-title">Post & Articles</li>
         <li class="sidebar-item">
           <a href="/categories" class="sidebar-link">
@@ -78,7 +86,9 @@
             <span>Artikel</span>
           </a>
         </li>
+        <% } %>
 
+        <% if(user.role.includes("ketum","sekum")){ %>
         <li class="sidebar-title">Struktural</li>
         <li class="sidebar-item has-sub">
           <a href="#" class="sidebar-link">
@@ -107,7 +117,9 @@
             <span>Pengurus</span>
           </a>
         </li>
+        <% } %>
 
+        <% if(user.role.includes("ketum")){ %>
         <li class="sidebar-title">Pengguna</li>
         <li class="sidebar-item">
           <a href="/users" class="sidebar-link">
@@ -115,7 +127,9 @@
             <span>Pengguna</span>
           </a>
         </li>
+        <% } %>
 
+        <% if(user.role.includes("ketum")){ %>
         <li class="sidebar-title">Pengaturan</li>
         <li class="sidebar-item">
           <a href="/settings" class="sidebar-link">
@@ -123,6 +137,7 @@
             <span>Pengaturan</span>
           </a>
         </li>
+        <% } %>
 
         <li class="sidebar-title">Logout</li>
         <li class="sidebar-item">

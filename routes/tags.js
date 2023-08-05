@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const tagsController = require("../controllers/tagsController");
 const { tagStore, tagUpdate } = require("../validations/tagsValidation");
-const { isLogin } = require("../middleware/authMiddleware");
 
-router.use(isLogin);
 router.get("/", tagsController.index);
 router.get("/create", tagsController.create);
 router.get("/:id/edit", tagsController.edit);

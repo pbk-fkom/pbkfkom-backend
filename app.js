@@ -8,6 +8,7 @@ const methodOverride = require("method-override");
 const session = require("express-session");
 const flash = require("connect-flash");
 var cors = require("cors");
+const { isLogin, hasRoles } = require("./middleware/authMiddleware");
 
 var indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -51,6 +52,12 @@ app.use(
     cookie: { maxAge: 60000 },
   })
 );
+
+app.use(function (req, res, next) {
+  res.locals.user = req.session.user;
+  next();
+});
+
 app.use(flash());
 app.use(methodOverride("_method"));
 app.use(logger("dev"));
@@ -65,18 +72,53 @@ app.set("layout", "./layouts/app");
 app.set("view engine", "ejs");
 
 app.use("/", loginRouter);
-app.use("/dashboard", dashboardRouter);
-app.use("/categories", categoriesRouter);
-app.use("/tags", tagsRouter);
-app.use("/posts", postsRouter);
-app.use("/structurals", structuralsRouter);
-app.use("/member-positions", memberPositionsRouter);
-app.use("/periode", periodeRouter);
-app.use("/members", membersRouter);
-app.use("/users", usersRouter);
-app.use("/quotes", quotesRouter);
-app.use("/achievements", achievementsRouter);
-app.use("/settings", settingsRouter);
+app.use(
+  "/dashboard",
+  isLogin,
+  hasRoles(["ketum", "sekum", "medinfo", "akademis"]),
+  dashboardRouter
+);
+app.use(
+  "/categories",
+  isLogin,
+  hasRoles(["ketum", "sekum", "medinfo", "akademis"]),
+  categoriesRouter
+);
+app.use(
+  "/tags",
+  isLogin,
+  hasRoles(["ketum", "sekum", "medinfo", "akademis"]),
+  tagsRouter
+);
+app.use(
+  "/posts",
+  isLogin,
+  hasRoles(["ketum", "sekum", "medinfo", "akademis"]),
+  postsRouter
+);
+app.use(
+  "/structurals",
+  isLogin,
+  hasRoles(["ketum", "sekum"]),
+  structuralsRouter
+);
+app.use(
+  "/member-positions",
+  isLogin,
+  hasRoles(["ketum", "sekum"]),
+  memberPositionsRouter
+);
+app.use("/periode", isLogin, hasRoles(["ketum", "sekum"]), periodeRouter);
+app.use("/members", isLogin, hasRoles(["ketum", "sekum"]), membersRouter);
+app.use("/users", isLogin, hasRoles(["ketum"]), usersRouter);
+app.use("/quotes", isLogin, hasRoles(["ketum"]), quotesRouter);
+app.use(
+  "/achievements",
+  isLogin,
+  hasRoles(["ketum", "sekum"]),
+  achievementsRouter
+);
+app.use("/settings", isLogin, hasRoles(["ketum"]), settingsRouter);
 
 // API
 app.use(`${URL}/members`, membersApiRouter);
