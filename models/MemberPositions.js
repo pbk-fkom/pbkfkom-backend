@@ -1,13 +1,15 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const memberPositionsScheme = mongoose.Schema({
-  name: {
-    type: String,
-    require: [true, 'Nama jabatan pengurus harus diisi']
+const memberPositionsScheme = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      require: [true, "Nama jabatan pengurus harus diisi"],
+    },
   },
-}, 
-{
-    timestamps: true
- });
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('MemberPositions', memberPositionsScheme);
+module.exports = mongoose.model("MemberPositions", memberPositionsScheme);

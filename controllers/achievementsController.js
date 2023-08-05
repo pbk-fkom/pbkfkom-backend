@@ -1,51 +1,64 @@
 const Achievements = require("../models/Achievements");
+const { validationResult } = require("express-validator");
 
 module.exports = {
-    
   index: async (req, res) => {
     try {
-        const alertMessage = req.flash("alertMessage")
-        const alertStatus = req.flash("alertStatus")
-  
-        const alert = { message: alertMessage, status: alertStatus}
-        const achievements = await Achievements.find()
-  
-        res.render('achievements/index',{
-          achievements,
-          alert,
-          title: 'Prestasi'
-        })
-      } catch (err) {
-        req.flash('alertMessage', `${err.message}`)
-        req.flash('alertStatus', 'danger')
-        res.redirect('/achievements')
-        
-      }
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+
+      const alert = { message: alertMessage, status: alertStatus };
+      const achievements = await Achievements.find();
+
+      res.render("achievements/index", {
+        achievements,
+        alert,
+        title: "Prestasi",
+      });
+    } catch (err) {
+      req.flash("alertMessage", `${err.message}`);
+      req.flash("alertStatus", "danger");
+      res.redirect("/achievements");
+    }
   },
 
   create: async (req, res) => {
     try {
-        res.render("achievements/create", {
-            title: "Tambah Prestasi",
-        });
+      const errors = req.flash("errors");
+
+      res.render("achievements/create", {
+        errors,
+        title: "Tambah Prestasi",
+      });
     } catch (error) {
-        req.flash("alertMessage", `${error.message}`);
-        req.flash("alertStatus", "danger");
-        
-        res.redirect("/achievements");
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/achievements");
     }
   },
 
   store: async (req, res) => {
     try {
-        const { activity_name, name, rank, year } = req.body;
-        await Achievements.create({ activity_name, name, rank, year })
+      const err = validationResult(req);
+      const { activity_name, name, rank, year } = req.body;
 
-        req.flash("alertMessage", "Berhasil menambahkan prestasi");
-        req.flash("alertStatus", "success");
+      if (!err.isEmpty()) {
+        const errors = err.array();
 
-        res.redirect("/achievements"); 
+        req.flash("errors", errors);
 
+        res.redirect("/achievements/create");
+
+        return false;
+      }
+
+      await Achievements.create({ activity_name, name, rank, year });
+
+      req.flash("alertMessage", "Berhasil menambahkan prestasi");
+      req.flash("alertStatus", "success");
+
+      res.redirect("/achievements");
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
       req.flash("alertStatus", "danger");
@@ -56,34 +69,50 @@ module.exports = {
 
   edit: async (req, res) => {
     try {
-         const { id } = req.params;
-         const achievement = await Achievements.findById(id);
-         
-         res.render("achievements/edit", {
-            achievement,
-            title: "Edit Prestasi",
-        });
-      } catch (error) {
-        req.flash("alertMessage", `${error.message}`);
-        req.flash("alertStatus", "danger");
+      const errors = req.flash("errors");
+      const { id } = req.params;
+      const achievement = await Achievements.findById(id);
 
-        res.redirect("/achievements");
-      }
+      res.render("achievements/edit", {
+        errors,
+        achievement,
+        title: "Edit Prestasi",
+      });
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/achievements");
+    }
   },
 
   update: async (req, res) => {
     try {
-        const { id } = req.params;
-        const { activity_name, name, rank, year } = req.body;
+      const err = validationResult(req);
+      const { id } = req.params;
+      const { activity_name, name, rank, year } = req.body;
 
-        await Achievements.findOneAndUpdate({
-            _id: id
-          },{ activity_name, name, rank, year });
-    
-        req.flash("alertMessage", "Berhasil mengedit prestasi");
-        req.flash("alertStatus", "success");
-    
-        res.redirect("/achievements");
+      if (!err.isEmpty()) {
+        const errors = err.array();
+
+        req.flash("errors", errors);
+
+        res.redirect(`/achievements/${id}/edit`);
+
+        return false;
+      }
+
+      await Achievements.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        { activity_name, name, rank, year }
+      );
+
+      req.flash("alertMessage", "Berhasil mengedit prestasi");
+      req.flash("alertStatus", "success");
+
+      res.redirect("/achievements");
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
       req.flash("alertStatus", "danger");
@@ -112,11 +141,11 @@ module.exports = {
   // API Controller
   indexAPI: async (req, res) => {
     try {
-      const achievements = await Achievements.find().sort({'_id':-1})
+      const achievements = await Achievements.find().sort({ _id: -1 });
 
-      res.status(200).json({ data: achievements })
+      res.status(200).json({ data: achievements });
     } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` })
+      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };
