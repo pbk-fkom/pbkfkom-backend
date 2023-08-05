@@ -41,8 +41,4 @@ router.delete("/:id", membersController.destroy);
 router.get("/import", membersController.import);
 router.post("/import", uploads.single("file"), membersController.importStore);
 
-// API
-router.get("/index", membersController.indexAPI);
-router.get("/active", membersController.activeMemberAPI);
-
 module.exports = router;

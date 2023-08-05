@@ -15,7 +15,4 @@ router.post("/store", categoryStore, categoriesController.store);
 router.put("/:id/update", categoryUpdate, categoriesController.update);
 router.delete("/:id", categoriesController.destroy);
 
-// API
-router.get("/index", categoriesController.indexAPI);
-
 module.exports = router;

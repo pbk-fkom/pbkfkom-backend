@@ -12,7 +12,4 @@ router.post("/store", tagStore, tagsController.store);
 router.put("/:id/update", tagUpdate, tagsController.update);
 router.delete("/:id", tagsController.destroy);
 
-// API
-router.get("/index", tagsController.indexAPI);
-
 module.exports = router;

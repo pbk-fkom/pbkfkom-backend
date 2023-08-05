@@ -35,7 +35,9 @@ module.exports = {
           req.session.user = {
             id: check._id,
             username: check.username,
+            role: check.role,
           };
+
           res.redirect("/dashboard");
         } else {
           req.flash("alertMessage", "Kata sandi yang anda inputkan salah");

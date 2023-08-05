@@ -15,7 +15,4 @@ router.post("/store", achievementStore, achievementsController.store);
 router.put("/:id/update", achievementUpdate, achievementsController.update);
 router.delete("/:id", achievementsController.destroy);
 
-// API
-router.get("/index", achievementsController.indexAPI);
-
 module.exports = router;

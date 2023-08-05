@@ -15,7 +15,4 @@ router.post("/store", strukturalStore, structuralsController.store);
 router.put("/:id/update", strukturalUpdate, structuralsController.update);
 router.delete("/:id", structuralsController.destroy);
 
-// API
-router.get("/index", structuralsController.indexAPI);
-
 module.exports = router;
