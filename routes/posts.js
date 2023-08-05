@@ -4,9 +4,7 @@ const postsController = require("../controllers/postsController");
 const multer = require("multer");
 const os = require("os");
 const { postStore, postUpdate } = require("../validations/postsValidation");
-const { isLogin } = require("../middleware/authMiddleware");
 
-router.use(isLogin);
 router.get("/", postsController.index);
 router.get("/create", postsController.create);
 router.get("/:id/edit", postsController.edit);

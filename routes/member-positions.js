@@ -5,9 +5,7 @@ const {
   memberPositionStore,
   memberPositionUpdate,
 } = require("../validations/memberPositionsValidation");
-const { isLogin } = require("../middleware/authMiddleware");
 
-router.use(isLogin);
 router.get("/", memberPositionsController.index);
 router.get("/create", memberPositionsController.create);
 router.get("/:id/edit", memberPositionsController.edit);

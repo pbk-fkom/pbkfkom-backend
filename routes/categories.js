@@ -6,10 +6,6 @@ const {
   categoryUpdate,
 } = require("../validations/categoriesValidation");
 
-const { isLogin } = require("../middleware/authMiddleware");
-
-router.use(isLogin);
-
 router.get("/", categoriesController.index);
 router.get("/create", categoriesController.create);
 router.get("/:id/edit", categoriesController.edit);

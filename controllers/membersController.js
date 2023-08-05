@@ -16,11 +16,9 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const members = await Members.find().populate([
-        "memberPositionId",
-        "structuralId",
-        "periodeId",
-      ]);
+      const members = await Members.find()
+        .sort({ _id: -1 })
+        .populate(["memberPositionId", "structuralId", "periodeId"]);
 
       res.render("members/index", {
         members,

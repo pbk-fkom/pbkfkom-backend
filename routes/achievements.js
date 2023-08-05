@@ -5,9 +5,6 @@ const {
   achievementStore,
   achievementUpdate,
 } = require("../validations/achievementsValidation");
-const { isLogin } = require("../middleware/authMiddleware");
-
-router.use(isLogin);
 
 router.get("/", achievementsController.index);
 router.get("/create", achievementsController.create);
