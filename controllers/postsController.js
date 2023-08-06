@@ -1,11 +1,18 @@
 const Posts = require("../models/Posts");
 const Categories = require("../models/Categories");
 const Tags = require("../models/Tags");
-const path = require("path");
-const fs = require("fs");
 const config = require("../config");
 const sharp = require("sharp");
 const { validationResult } = require("express-validator");
+const B2 = require("backblaze-b2");
+const slugify = require("slugify");
+
+const b2 = new B2({
+  applicationKeyId: config.applicationKeyId,
+  applicationKey: config.applicationKey,
+});
+
+const PATH = "assets/members";
 
 module.exports = {
   index: async (req, res) => {
@@ -14,11 +21,9 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const posts = await Posts.find().populate([
-        "categoryId",
-        "tagId",
-        "userId",
-      ]);
+      const posts = await Posts.find()
+        .sort({ _id: -1 })
+        .populate(["categoryId", "tagId", "userId"]);
 
       res.render("posts/index", {
         posts,
@@ -90,52 +95,63 @@ module.exports = {
           return false;
         }
 
-        let tmp_path = req.file.path;
         let originaExt =
           req.file.originalname.split(".")[
             req.file.originalname.split(".").length - 1
           ];
-        let filename = req.file.filename + "." + originaExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/assets/thumbnails/${filename}`
-        );
+        let filename = `${slugify(title)}-${Date.now()}.${originaExt}`;
+        let buffer = await sharp(req.file.buffer)
+          .resize()
+          .jpeg({ quality: 80 })
+          .toBuffer();
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
+        try {
+          await b2.authorize();
+          b2.getUploadUrl({
+            bucketId: config.bucketId,
+          })
+            .then((response) => {
+              b2.uploadFile({
+                uploadUrl: response.data.uploadUrl,
+                uploadAuthToken: response.data.authorizationToken,
+                fileName: `${PATH}/${filename}`,
+                data: buffer,
+              })
+                .then(async (response) => {
+                  const post = new Posts({
+                    title,
+                    content,
+                    categoryId: category,
+                    tagId: tags,
+                    status,
+                    writer,
+                    userId: req.session.user.id,
+                    thumbnail: filename,
+                  });
 
-        src.pipe(dest);
+                  await post.save();
 
-        src.on("end", async () => {
-          try {
-            await sharp(tmp_path)
-              .resize()
-              .jpeg({ quality: 75 })
-              .toFile(target_path);
+                  req.flash("alertMessage", "Berhasil menambahkan artikel");
+                  req.flash("alertStatus", "success");
 
-            const post = new Posts({
-              title,
-              content,
-              categoryId: category,
-              tagId: tags,
-              status,
-              writer,
-              userId: req.session.user.id,
-              thumbnail: filename,
+                  res.redirect("/posts");
+                })
+                .catch((err) => {
+                  req.flash("alertMessage", `${err.message}`);
+                  req.flash("alertStatus", "danger");
+                  res.redirect("/posts");
+                });
+            })
+            .catch((err) => {
+              req.flash("alertMessage", `${err.message}`);
+              req.flash("alertStatus", "danger");
+              res.redirect("/posts");
             });
-
-            await post.save();
-
-            req.flash("alertMessage", "Berhasil menambahkan artikel");
-            req.flash("alertStatus", "success");
-
-            res.redirect("/posts");
-          } catch (err) {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
-            res.redirect("/posts");
-          }
-        });
+        } catch (err) {
+          req.flash("alertMessage", `${err.message}`);
+          req.flash("alertStatus", "danger");
+          res.redirect("/posts");
+        }
       } else {
         req.flash("alertMessage", "Pilih thumbnail");
         req.flash("alertStatus", "danger");
@@ -218,62 +234,78 @@ module.exports = {
           return false;
         }
 
-        let tmp_path = req.file.path;
         let originaExt =
           req.file.originalname.split(".")[
             req.file.originalname.split(".").length - 1
           ];
-        let filename = req.file.filename + "." + originaExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/assets/thumbnails/${filename}`
-        );
+        let filename = `${slugify(title)}-${Date.now()}.${originaExt}`;
+        let buffer = await sharp(req.file.buffer)
+          .resize()
+          .jpeg({ quality: 80 })
+          .toBuffer();
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
+        try {
+          await b2.authorize();
+          b2.getUploadUrl({
+            bucketId: config.bucketId,
+          })
+            .then((response) => {
+              b2.uploadFile({
+                uploadUrl: response.data.uploadUrl,
+                uploadAuthToken: response.data.authorizationToken,
+                fileName: `${PATH}/${filename}`,
+                data: buffer,
+              })
+                .then(async (response) => {
+                  const post = await Posts.findOne({ _id: id });
 
-        src.pipe(dest);
+                  b2.hideFile({
+                    bucketId: config.bucketId,
+                    fileName: `${PATH}/${post.thumbnail}`,
+                  })
+                    .then(async (response) => {
+                      await Posts.findOneAndUpdate(
+                        {
+                          _id: id,
+                        },
+                        {
+                          title,
+                          content,
+                          categoryId: category,
+                          tagId: tags,
+                          status,
+                          writer,
+                          userId: req.session.user.id,
+                          thumbnail: filename,
+                        }
+                      );
 
-        src.on("end", async () => {
-          try {
-            await sharp(tmp_path)
-              .resize()
-              .jpeg({ quality: 75 })
-              .toFile(target_path);
-
-            const post = await Posts.findOne({ _id: id });
-
-            let currentImage = `${config.rootPath}/public/assets/thumbnails/${post.thumbnail}`;
-            if (fs.existsSync(currentImage)) {
-              fs.unlinkSync(currentImage);
-            }
-
-            await Posts.findOneAndUpdate(
-              {
-                _id: id,
-              },
-              {
-                title,
-                content,
-                categoryId: category,
-                tagId: tags,
-                status,
-                writer,
-                userId: req.session.user.id,
-                thumbnail: filename,
-              }
-            );
-
-            req.flash("alertMessage", "Berhasil mengedit artikel");
-            req.flash("alertStatus", "success");
-
-            res.redirect("/posts");
-          } catch (err) {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
-            res.redirect("/posts");
-          }
-        });
+                      req.flash("alertMessage", "Berhasil mengedit artikel");
+                      req.flash("alertStatus", "success");
+                      res.redirect("/posts");
+                    })
+                    .catch((err) => {
+                      req.flash("alertMessage", `${err.message}`);
+                      req.flash("alertStatus", "danger");
+                      res.redirect("/posts");
+                    });
+                })
+                .catch((err) => {
+                  req.flash("alertMessage", `${err.message}`);
+                  req.flash("alertStatus", "danger");
+                  res.redirect("/posts");
+                });
+            })
+            .catch((err) => {
+              req.flash("alertMessage", `${err.message}`);
+              req.flash("alertStatus", "danger");
+              res.redirect("/posts");
+            });
+        } catch (err) {
+          req.flash("alertMessage", `${err.message}`);
+          req.flash("alertStatus", "danger");
+          res.redirect("/posts");
+        }
       } else {
         await Posts.findOneAndUpdate(
           {
@@ -289,10 +321,8 @@ module.exports = {
             userId: req.session.user.id,
           }
         );
-
         req.flash("alertMessage", "Berhasil mengedit artikel");
         req.flash("alertStatus", "success");
-
         res.redirect("/posts");
       }
     } catch (error) {
@@ -311,45 +341,34 @@ module.exports = {
         _id: id,
       });
 
-      let currentImage = `${config.rootPath}/public/assets/thumbnails/${post.thumbnail}`;
-      if (fs.existsSync(currentImage)) {
-        fs.unlinkSync(currentImage);
-      }
+      try {
+        await b2.authorize();
+        b2.hideFile({
+          bucketId: config.bucketId,
+          fileName: `${PATH}/${post.thumbnail}`,
+        })
+          .then((response) => {
+            req.flash("alertMessage", "Berhasil menghapus artikel");
+            req.flash("alertStatus", "success");
+            res.redirect("/posts");
+          })
+          .catch((err) => {
+            req.flash("alertMessage", `${err.message}`);
+            req.flash("alertStatus", "danger");
 
-      req.flash("alertMessage", "Berhasil menghapus artikel");
-      req.flash("alertStatus", "success");
-      res.redirect("/posts");
+            res.redirect("/posts");
+          });
+      } catch (err) {
+        req.flash("alertMessage", `${err.message}`);
+        req.flash("alertStatus", "danger");
+
+        res.redirect("/posts");
+      }
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
       req.flash("alertStatus", "danger");
 
       res.redirect("/posts");
-    }
-  },
-
-  // API Controller
-  indexAPI: async (req, res) => {
-    try {
-      const posts = await Posts.find().sort({ _id: -1 }).populate("categoryId");
-
-      res.status(200).json({ data: posts });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
-    }
-  },
-
-  detailAPI: async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const post = await Posts.findOne({ slug: slug }).populate("tagId");
-
-      if (!post) {
-        return res.status(404).json({ message: "Artikel tidak ditemukan.!" });
-      }
-
-      res.status(200).json(post);
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };

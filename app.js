@@ -9,6 +9,7 @@ const session = require("express-session");
 const flash = require("connect-flash");
 var cors = require("cors");
 const { isLogin, hasRoles } = require("./middleware/authMiddleware");
+const config = require("./config");
 
 var indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -54,6 +55,7 @@ app.use(
 );
 
 app.use(function (req, res, next) {
+  res.locals.storageUrl = config.storageUrl;
   res.locals.user = req.session.user;
   next();
 });

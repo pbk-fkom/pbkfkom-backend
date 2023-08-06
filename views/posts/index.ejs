@@ -5,11 +5,9 @@
         <a href="/posts/create" class="btn btn-primary">Tambah +</a>
       </div>
       <div class="card-body">
-        <% if(alert.message != "") { %>
-        <div class="alert alert-<%= alert.status %>" role="alert">
-          <%= alert.message %>
-        </div>
-        <% } %>
+
+        <%- include('../partials/message.ejs') %>
+
         <div class="table-responsive">
           <table class="table" id="table1">
             <thead>
@@ -32,7 +30,7 @@
               <% posts.forEach((post, index) => { %>
               <tr>
                 <td><%= index + 1 %></td>
-                <td><img src="assets/thumbnails/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" class="img-fluid" width="50"></td>
+                <td><img src="<%= storageUrl %>/assets/thumbnails/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" class="img-fluid" width="50"></td>
                 <td><%= post.title %></td>
                 <td><%- post.content %></td>
                 <td>

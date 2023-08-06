@@ -14,7 +14,7 @@
               <label for="thumbnail">Thumbnail</label>
             </div>
             <div class="col-md-8 form-group">
-              <img src="/assets/thumbnails/<%= post.thumbnail %>" class="img-fluid mb-3" alt="<%= post.thumbnail %>" width="200">
+              <img src="<%= storageUrl %>/assets/thumbnails/<%= post.thumbnail %>" class="img-fluid mb-3" alt="<%= post.thumbnail %>" width="200">
               <input type="file" id="thumbnail" class="form-control" name="thumbnail" accept="image/png, image/jpeg" />
               <p>
                 Maksimal ukuran file : 1MB <br />

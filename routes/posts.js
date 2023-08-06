@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const postsController = require("../controllers/postsController");
 const multer = require("multer");
-const os = require("os");
 const { postStore, postUpdate } = require("../validations/postsValidation");
 
 router.get("/", postsController.index);
@@ -11,14 +10,14 @@ router.get("/:id/edit", postsController.edit);
 
 router.post(
   "/store",
-  multer({ dest: os.tmpdir() }).single("thumbnail"),
+  multer().single("thumbnail"),
   postStore,
   postsController.store
 );
 
 router.put(
   "/:id/update",
-  multer({ dest: os.tmpdir() }).single("thumbnail"),
+  multer().single("thumbnail"),
   postUpdate,
   postsController.update
 );

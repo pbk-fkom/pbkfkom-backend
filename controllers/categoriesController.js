@@ -8,7 +8,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const categories = await Categories.find();
+      const categories = await Categories.find().sort({ _id: -1 });
 
       res.render("categories/index", {
         categories,
@@ -135,17 +135,6 @@ module.exports = {
       req.flash("alertStatus", "danger");
 
       res.redirect("/categories");
-    }
-  },
-
-  // API Controller
-  indexAPI: async (req, res) => {
-    try {
-      const categories = await Categories.find();
-
-      res.status(200).json({ data: categories });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };
