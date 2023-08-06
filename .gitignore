@@ -42,9 +42,3 @@ public/assets/thumbnails/*
 public/assets/members/*
 public/assets/about/*
 public/assets/uploads/*
-
-!public/assets/about/avatar.png
-!public/assets/members
-!public/assets/thumbnails/avatar.png
-!public/assets/uploads/avatar.png
-!public/assets/members/avatar.png
