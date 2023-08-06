@@ -8,6 +8,15 @@ const config = require("../config");
 const readXlsxFile = require("read-excel-file/node");
 const sharp = require("sharp");
 const { validationResult } = require("express-validator");
+const B2 = require("backblaze-b2");
+const slugify = require("slugify");
+
+const b2 = new B2({
+  applicationKeyId: config.applicationKeyId,
+  applicationKey: config.applicationKey,
+});
+
+const PATH = "assets/members";
 
 module.exports = {
   index: async (req, res) => {
@@ -104,56 +113,67 @@ module.exports = {
           return false;
         }
 
-        let tmp_path = req.file.path;
         let originaExt =
           req.file.originalname.split(".")[
             req.file.originalname.split(".").length - 1
           ];
-        let filename = req.file.filename + "." + originaExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/assets/members/${filename}`
-        );
+        let filename = `${slugify(name)}-${Date.now()}.${originaExt}`;
+        let buffer = await sharp(req.file.buffer)
+          .resize()
+          .jpeg({ quality: 80 })
+          .toBuffer();
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
+        try {
+          await b2.authorize();
+          b2.getUploadUrl({
+            bucketId: config.bucketId,
+          })
+            .then((response) => {
+              b2.uploadFile({
+                uploadUrl: response.data.uploadUrl,
+                uploadAuthToken: response.data.authorizationToken,
+                fileName: `${PATH}/${filename}`,
+                data: buffer,
+              })
+                .then(async (response) => {
+                  const member = new Members({
+                    nim,
+                    name,
+                    email,
+                    classes,
+                    gender,
+                    phone,
+                    address,
+                    instagram,
+                    memberPositionId: member_position,
+                    structuralId: structural,
+                    periodeId: periode,
+                    photo: filename,
+                  });
 
-        src.pipe(dest);
+                  await member.save();
 
-        src.on("end", async () => {
-          try {
-            await sharp(tmp_path)
-              .resize()
-              .jpeg({ quality: 75 })
-              .toFile(target_path);
+                  req.flash("alertMessage", "Berhasil menambahkan pengurus");
+                  req.flash("alertStatus", "success");
 
-            const member = new Members({
-              nim,
-              name,
-              email,
-              classes,
-              gender,
-              phone,
-              address,
-              instagram,
-              memberPositionId: member_position,
-              structuralId: structural,
-              periodeId: periode,
-              photo: filename,
+                  res.redirect("/members");
+                })
+                .catch((err) => {
+                  req.flash("alertMessage", `${err.message}`);
+                  req.flash("alertStatus", "danger");
+                  res.redirect("/members");
+                });
+            })
+            .catch((err) => {
+              req.flash("alertMessage", `${err.message}`);
+              req.flash("alertStatus", "danger");
+              res.redirect("/members");
             });
-
-            await member.save();
-
-            req.flash("alertMessage", "Berhasil menambahkan pengurus");
-            req.flash("alertStatus", "success");
-
-            res.redirect("/members");
-          } catch (err) {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
-            res.redirect("/members");
-          }
-        });
+        } catch (err) {
+          req.flash("alertMessage", `${err.message}`);
+          req.flash("alertStatus", "danger");
+          res.redirect("/members");
+        }
       } else {
         req.flash("alertMessage", "Pilih foto");
         req.flash("alertStatus", "danger");
@@ -250,66 +270,82 @@ module.exports = {
           return false;
         }
 
-        let tmp_path = req.file.path;
         let originaExt =
           req.file.originalname.split(".")[
             req.file.originalname.split(".").length - 1
           ];
-        let filename = req.file.filename + "." + originaExt;
-        let target_path = path.resolve(
-          config.rootPath,
-          `public/assets/members/${filename}`
-        );
+        let filename = `${slugify(name)}-${Date.now()}.${originaExt}`;
+        let buffer = await sharp(req.file.buffer)
+          .resize()
+          .jpeg({ quality: 80 })
+          .toBuffer();
 
-        const src = fs.createReadStream(tmp_path);
-        const dest = fs.createWriteStream(target_path);
+        try {
+          await b2.authorize();
+          b2.getUploadUrl({
+            bucketId: config.bucketId,
+          })
+            .then((response) => {
+              b2.uploadFile({
+                uploadUrl: response.data.uploadUrl,
+                uploadAuthToken: response.data.authorizationToken,
+                fileName: `${PATH}/${filename}`,
+                data: buffer,
+              })
+                .then(async (response) => {
+                  const member = await Members.findOne({ _id: id });
 
-        src.pipe(dest);
+                  b2.hideFile({
+                    bucketId: config.bucketId,
+                    fileName: `${PATH}/${member.photo}`,
+                  })
+                    .then(async (response) => {
+                      await Members.findOneAndUpdate(
+                        {
+                          _id: id,
+                        },
+                        {
+                          nim,
+                          name,
+                          email,
+                          classes,
+                          gender,
+                          phone,
+                          address,
+                          instagram,
+                          memberPositionId: member_position,
+                          structuralId: structural,
+                          periodeId: periode,
+                          photo: filename,
+                        }
+                      );
 
-        src.on("end", async () => {
-          try {
-            await sharp(tmp_path)
-              .resize()
-              .jpeg({ quality: 75 })
-              .toFile(target_path);
-
-            const member = await Members.findOne({ _id: id });
-
-            let currentImage = `${config.rootPath}/public/assets/members/${member.photo}`;
-            if (fs.existsSync(currentImage)) {
-              fs.unlinkSync(currentImage);
-            }
-
-            await Members.findOneAndUpdate(
-              {
-                _id: id,
-              },
-              {
-                nim,
-                name,
-                email,
-                classes,
-                gender,
-                phone,
-                address,
-                instagram,
-                memberPositionId: member_position,
-                structuralId: structural,
-                periodeId: periode,
-                photo: filename,
-              }
-            );
-
-            req.flash("alertMessage", "Berhasil mengedit pengurus");
-            req.flash("alertStatus", "success");
-
-            res.redirect("/members");
-          } catch (err) {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
-            res.redirect("/members");
-          }
-        });
+                      req.flash("alertMessage", "Berhasil mengedit pengurus");
+                      req.flash("alertStatus", "success");
+                      res.redirect("/members");
+                    })
+                    .catch((err) => {
+                      req.flash("alertMessage", `${err.message}`);
+                      req.flash("alertStatus", "danger");
+                      res.redirect("/members");
+                    });
+                })
+                .catch((err) => {
+                  req.flash("alertMessage", `${err.message}`);
+                  req.flash("alertStatus", "danger");
+                  res.redirect("/members");
+                });
+            })
+            .catch((err) => {
+              req.flash("alertMessage", `${err.message}`);
+              req.flash("alertStatus", "danger");
+              res.redirect("/members");
+            });
+        } catch (err) {
+          req.flash("alertMessage", `${err.message}`);
+          req.flash("alertStatus", "danger");
+          res.redirect("/members");
+        }
       } else {
         await Members.findOneAndUpdate(
           {
@@ -350,14 +386,29 @@ module.exports = {
         _id: id,
       });
 
-      let currentImage = `${config.rootPath}/public/assets/members/${member.thumbnail}`;
-      if (fs.existsSync(currentImage)) {
-        fs.unlinkSync(currentImage);
-      }
+      try {
+        await b2.authorize();
+        b2.hideFile({
+          bucketId: config.bucketId,
+          fileName: `${PATH}/${member.photo}`,
+        })
+          .then((response) => {
+            req.flash("alertMessage", "Berhasil menghapus pengurus");
+            req.flash("alertStatus", "success");
+            res.redirect("/members");
+          })
+          .catch((err) => {
+            req.flash("alertMessage", `${err.message}`);
+            req.flash("alertStatus", "danger");
 
-      req.flash("alertMessage", "Berhasil menghapus pengurus");
-      req.flash("alertStatus", "success");
-      res.redirect("/members");
+            res.redirect("/members");
+          });
+      } catch (err) {
+        req.flash("alertMessage", `${err.message}`);
+        req.flash("alertStatus", "danger");
+
+        res.redirect("/members");
+      }
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
       req.flash("alertStatus", "danger");
@@ -383,8 +434,8 @@ module.exports = {
     try {
       if (
         !(
-          req.file.mimetype === "image/xlsx" ||
-          req.file.mimetype === "image/xlx"
+          req.file.mimetype.includes("excel") ||
+          req.file.mimetype.includes("spreadsheetml")
         )
       ) {
         req.flash(
@@ -476,32 +527,6 @@ module.exports = {
       req.flash("alertStatus", "danger");
 
       res.redirect("/members");
-    }
-  },
-
-  // API Controller
-  indexAPI: async (req, res) => {
-    try {
-      const members = await Members.find().populate(
-        "memberPositionId structuralId periodeId"
-      );
-
-      res.status(200).json({ data: members });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
-    }
-  },
-
-  activeMemberAPI: async (req, res) => {
-    try {
-      const periode = await Periode.find().sort({ _id: -1 }).limit(1);
-      const members = await Members.find({
-        periodeId: periode[0]._id,
-      }).populate("memberPositionId structuralId");
-
-      res.status(200).json({ data: members });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };

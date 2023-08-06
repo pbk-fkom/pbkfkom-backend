@@ -8,7 +8,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const periode = await Periode.find();
+      const periode = await Periode.find().sort({ _id: -1 });
 
       res.render("periode/index", {
         periode,
@@ -134,26 +134,6 @@ module.exports = {
       req.flash("alertStatus", "danger");
 
       res.redirect("/periode");
-    }
-  },
-
-  indexAPI: async (req, res) => {
-    try {
-      const periode = await Periode.find().sort({ _id: -1 });
-
-      res.status(200).json({ data: periode });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
-    }
-  },
-
-  getLatestPeriodeAPI: async (req, res) => {
-    try {
-      const periode = await Periode.find().sort({ _id: -1 }).limit(1);
-
-      res.status(200).json({ data: periode });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };

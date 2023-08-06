@@ -9,7 +9,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const users = await Users.find();
+      const users = await Users.find().sort({ _id: -1 });
 
       res.render("users/index", {
         users,
