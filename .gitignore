@@ -43,8 +43,8 @@ public/assets/members/*
 public/assets/about/*
 public/assets/uploads/*
 
-!public/assets/about/avatar.png
-!public/assets/members
-!public/assets/thumbnails/avatar.png
-!public/assets/uploads/avatar.png
-!public/assets/members/avatar.png
+!public/assets/about/.gitkeep
+!public/assets/members/.gitkeep
+!public/assets/thumbnails/.gitkeep
+!public/assets/uploads/.gitkeep
+!public/assets/members/.gitkeep

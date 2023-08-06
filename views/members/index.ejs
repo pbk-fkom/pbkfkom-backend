@@ -38,9 +38,9 @@
               <tr>
                 <td><%= index + 1 %></td>
                 <% if(member.photo == "avatar.png"){ %>
-                <td><img src="/assets/static/images/faces/avatar.png" alt="avatar.png" class="img-fluid" width="50"></td>
+                <td><img src="<%= storageUrl %>/assets/static/images/faces/avatar.png" alt="avatar.png" class="img-fluid" width="50"></td>
                 <% } else { %>
-                <td><img src="/assets/members/<%= member.photo %>" alt="<%= member.photo %>" class="img-fluid" width="50"></td>
+                <td><img src="<%= storageUrl %>/assets/members/<%= member.photo %>" alt="<%= member.photo %>" class="img-fluid" width="50"></td>
                 <% } %>
                 <td><%= member.nim %></td>
                 <td><%= member.name %></td>

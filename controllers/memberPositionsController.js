@@ -8,7 +8,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const memberPositions = await MemberPositions.find();
+      const memberPositions = await MemberPositions.find().sort({ _id: -1 });
 
       res.render("member-positions/index", {
         memberPositions,

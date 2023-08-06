@@ -2,11 +2,16 @@ const express = require("express");
 const router = express.Router();
 const membersController = require("../controllers/membersController");
 const multer = require("multer");
-const os = require("os");
 const {
   memberStore,
   memberUpdate,
 } = require("../validations/membersValidation");
+const { mkdirp } = require("mkdirp");
+const fs = require("fs");
+
+if (!fs.existsSync("public/assets/uploads")) {
+  mkdirp("public/assets/uploads");
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -25,14 +30,14 @@ router.get("/:id/edit", membersController.edit);
 
 router.post(
   "/store",
-  multer({ dest: os.tmpdir() }).single("photo"),
+  multer().single("photo"),
   memberStore,
   membersController.store
 );
 
 router.put(
   "/:id/update",
-  multer({ dest: os.tmpdir() }).single("photo"),
+  multer().single("photo"),
   memberUpdate,
   membersController.update
 );

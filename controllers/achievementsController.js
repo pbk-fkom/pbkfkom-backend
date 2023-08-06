@@ -8,7 +8,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const achievements = await Achievements.find();
+      const achievements = await Achievements.find().sort({ _id: -1 });
 
       res.render("achievements/index", {
         achievements,
@@ -135,17 +135,6 @@ module.exports = {
       req.flash("alertStatus", "danger");
 
       res.redirect("/achievements");
-    }
-  },
-
-  // API Controller
-  indexAPI: async (req, res) => {
-    try {
-      const achievements = await Achievements.find().sort({ _id: -1 });
-
-      res.status(200).json({ data: achievements });
-    } catch (err) {
-      res.status(500).json({ message: err.message || `Internal server error` });
     }
   },
 };
