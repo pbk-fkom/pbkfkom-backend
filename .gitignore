@@ -42,3 +42,9 @@ public/assets/thumbnails/*
 public/assets/members/*
 public/assets/about/*
 public/assets/uploads/*
+
+!public/assets/about/.gitkeep
+!public/assets/members/.gitkeep
+!public/assets/thumbnails/.gitkeep
+!public/assets/uploads/.gitkeep
+!public/assets/members/.gitkeep
