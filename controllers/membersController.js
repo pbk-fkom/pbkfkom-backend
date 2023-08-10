@@ -293,42 +293,66 @@ module.exports = {
                 data: buffer,
               })
                 .then(async (response) => {
-                  const member = await Members.findOne({ _id: id });
+                  // const member = await Members.findOne({ _id: id });
 
-                  b2.hideFile({
-                    bucketId: config.bucketId,
-                    fileName: `${PATH}/${member.photo}`,
-                  })
-                    .then(async (response) => {
-                      await Members.findOneAndUpdate(
-                        {
-                          _id: id,
-                        },
-                        {
-                          nim,
-                          name,
-                          email,
-                          classes,
-                          gender,
-                          phone,
-                          address,
-                          instagram,
-                          memberPositionId: member_position,
-                          structuralId: structural,
-                          periodeId: periode,
-                          photo: filename,
-                        }
-                      );
+                  // b2.hideFile({
+                  //   bucketId: config.bucketId,
+                  //   fileName: `${PATH}/${member.photo}`,
+                  // })
+                  //   .then(async (response) => {
+                  //     await Members.findOneAndUpdate(
+                  //       {
+                  //         _id: id,
+                  //       },
+                  //       {
+                  //         nim,
+                  //         name,
+                  //         email,
+                  //         classes,
+                  //         gender,
+                  //         phone,
+                  //         address,
+                  //         instagram,
+                  //         memberPositionId: member_position,
+                  //         structuralId: structural,
+                  //         periodeId: periode,
+                  //         photo: filename,
+                  //       }
+                  //     );
 
-                      req.flash("alertMessage", "Berhasil mengedit pengurus");
-                      req.flash("alertStatus", "success");
-                      res.redirect("/members");
-                    })
-                    .catch((err) => {
-                      req.flash("alertMessage", `${err.message}`);
-                      req.flash("alertStatus", "danger");
-                      res.redirect("/members");
-                    });
+                  //     req.flash("alertMessage", "Berhasil mengedit pengurus");
+                  //     req.flash("alertStatus", "success");
+                  //     res.redirect("/members");
+                  //   })
+                  //   .catch((err) => {
+                  //     req.flash("alertMessage", `${err.message}`);
+                  //     req.flash("alertStatus", "danger");
+                  //     res.redirect("/members");
+                  //   });
+
+                  await Members.findOneAndUpdate(
+                    {
+                      _id: id,
+                    },
+                    {
+                      nim,
+                      name,
+                      email,
+                      classes,
+                      gender,
+                      phone,
+                      address,
+                      instagram,
+                      memberPositionId: member_position,
+                      structuralId: structural,
+                      periodeId: periode,
+                      photo: filename,
+                    }
+                  );
+
+                  req.flash("alertMessage", "Berhasil mengedit pengurus");
+                  req.flash("alertStatus", "success");
+                  res.redirect("/members");
                 })
                 .catch((err) => {
                   req.flash("alertMessage", `${err.message}`);

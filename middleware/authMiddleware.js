@@ -2,7 +2,7 @@ const isLogin = (req, res, next) => {
   if (req.session.user === null || req.session.user === undefined) {
     req.flash("alertMessage", `Login dulu`);
     req.flash("alertStatus", "danger");
-    res.redirect("/secret");
+    res.redirect("/");
   } else {
     next();
   }
