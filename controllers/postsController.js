@@ -4,12 +4,19 @@ const Tags = require("../models/Tags");
 const config = require("../config");
 const sharp = require("sharp");
 const { validationResult } = require("express-validator");
-const B2 = require("backblaze-b2");
 const slugify = require("slugify");
+const {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
 
-const b2 = new B2({
-  applicationKeyId: config.applicationKeyId,
-  applicationKey: config.applicationKey,
+const s3Client = new S3Client({
+  region: config.region,
+  credentials: {
+    accessKeyId: config.accessKeyId,
+    secretAccessKey: config.secretAccessKey,
+  },
 });
 
 const PATH = "assets/members";
@@ -106,47 +113,33 @@ module.exports = {
           .toBuffer();
 
         try {
-          await b2.authorize();
-          b2.getUploadUrl({
-            bucketId: config.bucketId,
-          })
-            .then((response) => {
-              b2.uploadFile({
-                uploadUrl: response.data.uploadUrl,
-                uploadAuthToken: response.data.authorizationToken,
-                fileName: `${PATH}/${filename}`,
-                data: buffer,
-              })
-                .then(async (response) => {
-                  const post = new Posts({
-                    title,
-                    content,
-                    categoryId: category,
-                    tagId: tags,
-                    status,
-                    writer,
-                    userId: req.session.user.id,
-                    thumbnail: filename,
-                  });
+          const uploadParams = {
+            Bucket: config.bucketName,
+            Key: `${PATH}/${filename}`,
+            Body: buffer,
+            ACL: "public-read",
+          };
 
-                  await post.save();
+          const commandUpload = new PutObjectCommand(uploadParams);
+          await s3Client.send(commandUpload);
 
-                  req.flash("alertMessage", "Berhasil menambahkan artikel");
-                  req.flash("alertStatus", "success");
+          const post = new Posts({
+            title,
+            content,
+            categoryId: category,
+            tagId: tags,
+            status,
+            writer,
+            userId: req.session.user.id,
+            thumbnail: filename,
+          });
 
-                  res.redirect("/posts");
-                })
-                .catch((err) => {
-                  req.flash("alertMessage", `${err.message}`);
-                  req.flash("alertStatus", "danger");
-                  res.redirect("/posts");
-                });
-            })
-            .catch((err) => {
-              req.flash("alertMessage", `${err.message}`);
-              req.flash("alertStatus", "danger");
-              res.redirect("/posts");
-            });
+          await post.save();
+
+          req.flash("alertMessage", "Berhasil menambahkan artikel");
+          req.flash("alertStatus", "success");
+
+          res.redirect("/posts");
         } catch (err) {
           req.flash("alertMessage", `${err.message}`);
           req.flash("alertStatus", "danger");
@@ -245,62 +238,45 @@ module.exports = {
           .toBuffer();
 
         try {
-          await b2.authorize();
-          b2.getUploadUrl({
-            bucketId: config.bucketId,
-          })
-            .then((response) => {
-              b2.uploadFile({
-                uploadUrl: response.data.uploadUrl,
-                uploadAuthToken: response.data.authorizationToken,
-                fileName: `${PATH}/${filename}`,
-                data: buffer,
-              })
-                .then(async (response) => {
-                  const post = await Posts.findOne({ _id: id });
+          const post = await Posts.findOne({ _id: id });
 
-                  b2.hideFile({
-                    bucketId: config.bucketId,
-                    fileName: `${PATH}/${post.thumbnail}`,
-                  })
-                    .then(async (response) => {
-                      await Posts.findOneAndUpdate(
-                        {
-                          _id: id,
-                        },
-                        {
-                          title,
-                          content,
-                          categoryId: category,
-                          tagId: tags,
-                          status,
-                          writer,
-                          userId: req.session.user.id,
-                          thumbnail: filename,
-                        }
-                      );
+          const deleteParams = {
+            Bucket: config.bucketName,
+            Key: `${PATH}/${post.thumbnail}`,
+          };
 
-                      req.flash("alertMessage", "Berhasil mengedit artikel");
-                      req.flash("alertStatus", "success");
-                      res.redirect("/posts");
-                    })
-                    .catch((err) => {
-                      req.flash("alertMessage", `${err.message}`);
-                      req.flash("alertStatus", "danger");
-                      res.redirect("/posts");
-                    });
-                })
-                .catch((err) => {
-                  req.flash("alertMessage", `${err.message}`);
-                  req.flash("alertStatus", "danger");
-                  res.redirect("/posts");
-                });
-            })
-            .catch((err) => {
-              req.flash("alertMessage", `${err.message}`);
-              req.flash("alertStatus", "danger");
-              res.redirect("/posts");
-            });
+          const command = new DeleteObjectCommand(deleteParams);
+          await s3Client.send(command);
+
+          const uploadParams = {
+            Bucket: config.bucketName,
+            Key: `${PATH}/${filename}`,
+            Body: buffer,
+            ACL: "public-read",
+          };
+
+          const commandUpload = new PutObjectCommand(uploadParams);
+          await s3Client.send(commandUpload);
+
+          await Posts.findOneAndUpdate(
+            {
+              _id: id,
+            },
+            {
+              title,
+              content,
+              categoryId: category,
+              tagId: tags,
+              status,
+              writer,
+              userId: req.session.user.id,
+              thumbnail: filename,
+            }
+          );
+
+          req.flash("alertMessage", "Berhasil mengedit artikel");
+          req.flash("alertStatus", "success");
+          res.redirect("/posts");
         } catch (err) {
           req.flash("alertMessage", `${err.message}`);
           req.flash("alertStatus", "danger");
@@ -342,22 +318,17 @@ module.exports = {
       });
 
       try {
-        await b2.authorize();
-        b2.hideFile({
-          bucketId: config.bucketId,
-          fileName: `${PATH}/${post.thumbnail}`,
-        })
-          .then((response) => {
-            req.flash("alertMessage", "Berhasil menghapus artikel");
-            req.flash("alertStatus", "success");
-            res.redirect("/posts");
-          })
-          .catch((err) => {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
+        const deleteParams = {
+          Bucket: config.bucketName,
+          Key: `${PATH}/${post.thumbnail}`,
+        };
 
-            res.redirect("/posts");
-          });
+        const command = new DeleteObjectCommand(deleteParams);
+        await s3Client.send(command);
+
+        req.flash("alertMessage", "Berhasil menghapus artikel");
+        req.flash("alertStatus", "success");
+        res.redirect("/posts");
       } catch (err) {
         req.flash("alertMessage", `${err.message}`);
         req.flash("alertStatus", "danger");
