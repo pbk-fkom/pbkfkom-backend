@@ -1,5 +1,5 @@
 {
-  "name": "pbk-backend",
+  "name": "pbkfkom-backend",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "dev": "nodemon ./bin/www"
   },
   "dependencies": {
-    "backblaze-b2": "^1.7.0",
+    "@aws-sdk/client-s3": "^3.388.0",
     "bcryptjs": "^2.4.3",
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.4",
