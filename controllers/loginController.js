@@ -20,7 +20,7 @@ module.exports = {
     } catch (err) {
       req.flash("alertMessage", `${err.message}`);
       req.flash("alertStatus", "danger");
-      res.redirect("/secret");
+      res.redirect("/");
     }
   },
 
@@ -42,22 +42,22 @@ module.exports = {
         } else {
           req.flash("alertMessage", "Kata sandi yang anda inputkan salah");
           req.flash("alertStatus", "danger");
-          res.redirect("/secret");
+          res.redirect("/");
         }
       } else {
         req.flash("alertMessage", "Username yang anda inputkan salah");
         req.flash("alertStatus", "danger");
-        res.redirect("/secret");
+        res.redirect("/");
       }
     } catch (err) {
       req.flash("alertMessage", `${err.message}`);
       req.flash("alertStatus", "danger");
-      res.redirect("/secret");
+      res.redirect("/");
     }
   },
 
   logout: (req, res) => {
     req.session.destroy();
-    res.redirect("/secret");
+    res.redirect("/");
   },
 };
