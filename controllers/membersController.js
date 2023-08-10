@@ -8,12 +8,19 @@ const config = require("../config");
 const readXlsxFile = require("read-excel-file/node");
 const sharp = require("sharp");
 const { validationResult } = require("express-validator");
-const B2 = require("backblaze-b2");
 const slugify = require("slugify");
+const {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
 
-const b2 = new B2({
-  applicationKeyId: config.applicationKeyId,
-  applicationKey: config.applicationKey,
+const s3Client = new S3Client({
+  region: config.region,
+  credentials: {
+    accessKeyId: config.accessKeyId,
+    secretAccessKey: config.secretAccessKey,
+  },
 });
 
 const PATH = "assets/members";
@@ -124,51 +131,37 @@ module.exports = {
           .toBuffer();
 
         try {
-          await b2.authorize();
-          b2.getUploadUrl({
-            bucketId: config.bucketId,
-          })
-            .then((response) => {
-              b2.uploadFile({
-                uploadUrl: response.data.uploadUrl,
-                uploadAuthToken: response.data.authorizationToken,
-                fileName: `${PATH}/${filename}`,
-                data: buffer,
-              })
-                .then(async (response) => {
-                  const member = new Members({
-                    nim,
-                    name,
-                    email,
-                    classes,
-                    gender,
-                    phone,
-                    address,
-                    instagram,
-                    memberPositionId: member_position,
-                    structuralId: structural,
-                    periodeId: periode,
-                    photo: filename,
-                  });
+          const uploadParams = {
+            Bucket: config.bucketName,
+            Key: `${PATH}/${filename}`,
+            Body: buffer,
+            ACL: "public-read",
+          };
 
-                  await member.save();
+          const commandUpload = new PutObjectCommand(uploadParams);
+          await s3Client.send(commandUpload);
 
-                  req.flash("alertMessage", "Berhasil menambahkan pengurus");
-                  req.flash("alertStatus", "success");
+          const member = new Members({
+            nim,
+            name,
+            email,
+            classes,
+            gender,
+            phone,
+            address,
+            instagram,
+            memberPositionId: member_position,
+            structuralId: structural,
+            periodeId: periode,
+            photo: filename,
+          });
 
-                  res.redirect("/members");
-                })
-                .catch((err) => {
-                  req.flash("alertMessage", `${err.message}`);
-                  req.flash("alertStatus", "danger");
-                  res.redirect("/members");
-                });
-            })
-            .catch((err) => {
-              req.flash("alertMessage", `${err.message}`);
-              req.flash("alertStatus", "danger");
-              res.redirect("/members");
-            });
+          await member.save();
+
+          req.flash("alertMessage", "Berhasil menambahkan pengurus");
+          req.flash("alertStatus", "success");
+
+          res.redirect("/members");
         } catch (err) {
           req.flash("alertMessage", `${err.message}`);
           req.flash("alertStatus", "danger");
@@ -281,90 +274,49 @@ module.exports = {
           .toBuffer();
 
         try {
-          await b2.authorize();
-          b2.getUploadUrl({
-            bucketId: config.bucketId,
-          })
-            .then((response) => {
-              b2.uploadFile({
-                uploadUrl: response.data.uploadUrl,
-                uploadAuthToken: response.data.authorizationToken,
-                fileName: `${PATH}/${filename}`,
-                data: buffer,
-              })
-                .then(async (response) => {
-                  // const member = await Members.findOne({ _id: id });
+          const member = await Members.findOne({ _id: id });
 
-                  // b2.hideFile({
-                  //   bucketId: config.bucketId,
-                  //   fileName: `${PATH}/${member.photo}`,
-                  // })
-                  //   .then(async (response) => {
-                  //     await Members.findOneAndUpdate(
-                  //       {
-                  //         _id: id,
-                  //       },
-                  //       {
-                  //         nim,
-                  //         name,
-                  //         email,
-                  //         classes,
-                  //         gender,
-                  //         phone,
-                  //         address,
-                  //         instagram,
-                  //         memberPositionId: member_position,
-                  //         structuralId: structural,
-                  //         periodeId: periode,
-                  //         photo: filename,
-                  //       }
-                  //     );
+          const deleteParams = {
+            Bucket: config.bucketName,
+            Key: `${PATH}/${member.photo}`,
+          };
 
-                  //     req.flash("alertMessage", "Berhasil mengedit pengurus");
-                  //     req.flash("alertStatus", "success");
-                  //     res.redirect("/members");
-                  //   })
-                  //   .catch((err) => {
-                  //     req.flash("alertMessage", `${err.message}`);
-                  //     req.flash("alertStatus", "danger");
-                  //     res.redirect("/members");
-                  //   });
+          const command = new DeleteObjectCommand(deleteParams);
+          await s3Client.send(command);
 
-                  await Members.findOneAndUpdate(
-                    {
-                      _id: id,
-                    },
-                    {
-                      nim,
-                      name,
-                      email,
-                      classes,
-                      gender,
-                      phone,
-                      address,
-                      instagram,
-                      memberPositionId: member_position,
-                      structuralId: structural,
-                      periodeId: periode,
-                      photo: filename,
-                    }
-                  );
+          const uploadParams = {
+            Bucket: config.bucketName,
+            Key: `${PATH}/${filename}`,
+            Body: buffer,
+            ACL: "public-read",
+          };
 
-                  req.flash("alertMessage", "Berhasil mengedit pengurus");
-                  req.flash("alertStatus", "success");
-                  res.redirect("/members");
-                })
-                .catch((err) => {
-                  req.flash("alertMessage", `${err.message}`);
-                  req.flash("alertStatus", "danger");
-                  res.redirect("/members");
-                });
-            })
-            .catch((err) => {
-              req.flash("alertMessage", `${err.message}`);
-              req.flash("alertStatus", "danger");
-              res.redirect("/members");
-            });
+          const commandUpload = new PutObjectCommand(uploadParams);
+          await s3Client.send(commandUpload);
+
+          await Members.findOneAndUpdate(
+            {
+              _id: id,
+            },
+            {
+              nim,
+              name,
+              email,
+              classes,
+              gender,
+              phone,
+              address,
+              instagram,
+              memberPositionId: member_position,
+              structuralId: structural,
+              periodeId: periode,
+              photo: filename,
+            }
+          );
+
+          req.flash("alertMessage", "Berhasil mengedit pengurus");
+          req.flash("alertStatus", "success");
+          res.redirect("/members");
         } catch (err) {
           req.flash("alertMessage", `${err.message}`);
           req.flash("alertStatus", "danger");
@@ -411,22 +363,13 @@ module.exports = {
       });
 
       try {
-        await b2.authorize();
-        b2.hideFile({
-          bucketId: config.bucketId,
-          fileName: `${PATH}/${member.photo}`,
-        })
-          .then((response) => {
-            req.flash("alertMessage", "Berhasil menghapus pengurus");
-            req.flash("alertStatus", "success");
-            res.redirect("/members");
-          })
-          .catch((err) => {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
+        const deleteParams = {
+          Bucket: config.bucketName,
+          Key: `${PATH}/${member.photo}`,
+        };
 
-            res.redirect("/members");
-          });
+        const command = new DeleteObjectCommand(deleteParams);
+        await s3Client.send(command);
       } catch (err) {
         req.flash("alertMessage", `${err.message}`);
         req.flash("alertStatus", "danger");
