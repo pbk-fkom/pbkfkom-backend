@@ -1,11 +1,19 @@
 const Settings = require("../models/Settings");
 const config = require("../config");
-const B2 = require("backblaze-b2");
 const sharp = require("sharp");
 
-const b2 = new B2({
-  applicationKeyId: config.applicationKeyId,
-  applicationKey: config.applicationKey,
+const {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
+
+const s3Client = new S3Client({
+  region: config.region,
+  credentials: {
+    accessKeyId: config.accessKeyId,
+    secretAccessKey: config.secretAccessKey,
+  },
 });
 
 const PATH = "assets/about";
@@ -68,41 +76,39 @@ module.exports = {
           .jpeg({ quality: 80 })
           .toBuffer();
 
-        await b2.authorize();
-        b2.getUploadUrl({
-          bucketId: config.bucketId,
-        })
-          .then((response) => {
-            b2.uploadFile({
-              uploadUrl: response.data.uploadUrl,
-              uploadAuthToken: response.data.authorizationToken,
-              fileName: `${PATH}/${filename}`,
-              data: buffer,
-            })
-              .then(async (response) => {
-                await Settings.findOneAndUpdate(
-                  {
-                    key: "site_about_photo",
-                  },
-                  { value: filename }
-                );
+        const setting = await Settings.findOne({
+          key: "site_about_photo",
+        });
 
-                req.flash("alertMessage", "Berhasil mengedit pengurus");
-                req.flash("alertStatus", "success");
+        const deleteParams = {
+          Bucket: config.bucketName,
+          Key: `${PATH}/${setting.value}`,
+        };
 
-                res.redirect("/settings");
-              })
-              .catch((err) => {
-                req.flash("alertMessage", `${err.message}`);
-                req.flash("alertStatus", "danger");
-                res.redirect("/settings");
-              });
-          })
-          .catch((err) => {
-            req.flash("alertMessage", `${err.message}`);
-            req.flash("alertStatus", "danger");
-            res.redirect("/settings");
-          });
+        const command = new DeleteObjectCommand(deleteParams);
+        await s3Client.send(command);
+
+        const uploadParams = {
+          Bucket: config.bucketName,
+          Key: `${PATH}/${filename}`,
+          Body: buffer,
+          ACL: "public-read",
+        };
+
+        const commandUpload = new PutObjectCommand(uploadParams);
+        await s3Client.send(commandUpload);
+
+        await Settings.findOneAndUpdate(
+          {
+            key: "site_about_photo",
+          },
+          { value: filename }
+        );
+
+        req.flash("alertMessage", "Berhasil mengedit pengurus");
+        req.flash("alertStatus", "success");
+
+        res.redirect("/settings");
       } else {
         Object.keys(req.body).forEach(async (key) => {
           await Settings.findOneAndUpdate(
