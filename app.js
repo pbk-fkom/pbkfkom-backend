@@ -26,19 +26,7 @@ const quotesRouter = require("./routes/quotes");
 const achievementsRouter = require("./routes/achievements");
 const settingsRouter = require("./routes/settings");
 
-// api route
-const achievementsApiRouter = require("./routes/api/achievements");
-const categoriesApiRouter = require("./routes/api/categories");
-const membersApiRouter = require("./routes/api/members");
-const periodeApiRouter = require("./routes/api/periode");
-const postsApiRouter = require("./routes/api/posts");
-const quotesApiRouter = require("./routes/api/quotes");
-const settingsApiRouter = require("./routes/api/settings");
-const structuralsApiRouter = require("./routes/api/structurals");
-const tagsApiRouter = require("./routes/api/tags");
-
 var app = express();
-const URL = `/api/v1`;
 app.use(cors());
 
 // view engine setup
@@ -121,17 +109,6 @@ app.use(
   achievementsRouter
 );
 app.use("/settings", isLogin, hasRoles(["ketum"]), settingsRouter);
-
-// API
-app.use(`${URL}/members`, membersApiRouter);
-app.use(`${URL}/structurals`, structuralsApiRouter);
-app.use(`${URL}/quotes`, quotesApiRouter);
-app.use(`${URL}/posts`, postsApiRouter);
-app.use(`${URL}/periode`, periodeApiRouter);
-app.use(`${URL}/tags`, tagsApiRouter);
-app.use(`${URL}/categories`, categoriesApiRouter);
-app.use(`${URL}/achievements`, achievementsApiRouter);
-app.use(`${URL}/settings`, settingsApiRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
