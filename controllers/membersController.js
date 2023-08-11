@@ -16,7 +16,11 @@ const {
 } = require("@aws-sdk/client-s3");
 
 const s3Client = new S3Client({
-  region: config.region,
+  endpoint: {
+    hostname: config.hostname,
+    protocol: config.protocol,
+    path: config.path,
+  },
   credentials: {
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey,
