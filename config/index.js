@@ -9,6 +9,7 @@ module.exports = {
   hostname: process.env.AWS_HOSTNAME,
   protocol: process.env.AWS_PROTOCOL,
   path: process.env.AWS_PATH,
+  region: process.env.AWS_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   bucketName: process.env.S3_BUCKET_NAME,

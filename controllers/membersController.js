@@ -21,6 +21,7 @@ const s3Client = new S3Client({
     protocol: config.protocol,
     path: config.path,
   },
+  region: config.region,
   credentials: {
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey,
