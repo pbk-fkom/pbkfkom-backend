@@ -56,7 +56,7 @@
             <div class="col-md-8 form-group">
               <select name="tags[]" id="tag" class="choices form-select multiple-remove" multiple="multiple" required>
                 <% tags.forEach((tag, index) => { %>
-                <option value="<%= tag._id %>" <% post.tagId.forEach((t, index) => { %> <% if(t._id && tag._id) { %> selected <% } %> <% }) %>>
+                <option value="<%= tag._id %>" <% post.tagId.forEach((t, index) => { %> <% if(t._id.toString() === tag._id.toString()) { %> selected <%  } %> <% }) %>>
                   <%= tag.name %>
                 </option>
                 <% }) %>
