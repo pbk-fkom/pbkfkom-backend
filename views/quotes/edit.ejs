@@ -16,7 +16,7 @@
               <select name="member" id="member" class="choices form-select" required>
                 <option value="">-- Pilih --</option>
                 <% members.forEach((member, index) => { %>
-                <option value="<%= member._id %>" <% if(quotes.memberId._id && member._id) { %> selected <% } %>><%= member.name %></option>
+                <option value="<%= member._id %>" <% if(quotes.memberId._id.toString()  && member._id.toString()) { %> selected <% } %>><%= member.name %></option>
                 <% }) %>
               </select>
             </div>
