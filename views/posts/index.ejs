@@ -32,7 +32,7 @@
                 <td><%= index + 1 %></td>
                 <td><img src="<%= storageUrl %>/assets/thumbnails/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" class="img-fluid" width="50"></td>
                 <td><%= post.title %></td>
-                <td><%- post.content %></td>
+                <td><%- post.content.substring(0,200) %><%= post.content.length >=200 ? '...' : '' %> </td>
                 <td>
                   <% if (post.status == 'publish'){ %>
                   <div class="badge bg-success"><%= post.status %></div>
