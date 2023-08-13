@@ -24,7 +24,7 @@ const s3Client = new S3Client({
   },
 });
 
-const PATH = "assets/members";
+const PATH = "assets/posts";
 
 module.exports = {
   index: async (req, res) => {
